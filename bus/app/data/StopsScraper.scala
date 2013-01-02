@@ -6,6 +6,8 @@ object StopsScraper {
   import org.htmlcleaner._
   import recifeBuses._
   import models._
+  import dispatch._
+  import play.Logger
 
   // An example url for stops.  The linha and nomeItinerario are available on the Route object
   // http://200.238.84.28/site/consulta/itinerarios_parada_linhas.asp?linha=36&nomeitinerario=5673
@@ -16,10 +18,19 @@ object StopsScraper {
   }
 
   def getRootTagNode(route: Route): TagNode = {
-    var props = new CleanerProperties
-    var cleaner = new HtmlCleaner(props)
-    val file = new File("app/data/sample_pages/route.html")
-    cleaner.clean(new FileInputStream(file))
+    Logger.debug("buscando rota "+ route.nomeItinerario)
+    val routeUrl = createRouteUrl(route)
+    val request = url(routeUrl)
+    val response = Http(request OK as.String)
+    val cleaner = new HtmlCleaner(new CleanerProperties)
+    cleaner.clean(response())
+  }
+
+  private def createRouteUrl(route: Route) = {
+    "http://200.238.84.28/site/consulta/itinerarios_parada_linhas.asp?linha=" + 
+        route.externalRouteId +
+        "&nomeitinerario="+ 
+        route.nomeItinerario
   }
 
   def isRouteStopRow(html: TagNode): Boolean = {

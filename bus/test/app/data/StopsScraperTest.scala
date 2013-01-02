@@ -6,7 +6,7 @@ import models._
 
 class StopsScraperSuite extends FunSuite {
   test("parsing stops") {
-    val route = new Route("","","")
+    val route = new Route("","36","5673")
     val stops = StopsScraper.getStops(route)
     assert(stops.length > 0)
     val firstStop = stops(0)
