@@ -7,6 +7,7 @@ object StopsScraper {
   import recifeBuses._
   import models._
   import dispatch._
+  import play.Logger
 
   // An example url for stops.  The linha and nomeItinerario are available on the Route object
   // http://200.238.84.28/site/consulta/itinerarios_parada_linhas.asp?linha=36&nomeitinerario=5673
@@ -17,6 +18,7 @@ object StopsScraper {
   }
 
   def getRootTagNode(route: Route): TagNode = {
+    Logger.debug("buscando rota "+ route.nomeItinerario)
     val routeUrl = createRouteUrl(route)
     val request = url(routeUrl)
     val response = Http(request OK as.String)
