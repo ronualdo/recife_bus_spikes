@@ -18,7 +18,7 @@ object StopsScraper {
   }
 
   def getRootTagNode(route: Route): TagNode = {
-    Logger.debug("buscando rota "+ route.nomeItinerario)
+    Logger.debug("searching route "+ route.nomeItinerario)
     val routeUrl = createRouteUrl(route)
     val request = url(routeUrl)
     val response = Http(request OK as.String)

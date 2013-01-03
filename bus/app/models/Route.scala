@@ -11,7 +11,7 @@ case class Route(name: String, externalRouteId: String, nomeItinerario: String, 
 
 object Route {
   def insert(route: Route) = {
-    DB.withConnection { implicit c =>
+    val routeId = DB.withConnection { implicit c =>
       SQL("""
         INSERT INTO Routes (externalRouteId, nomeItinerario, name)
         VALUES ({externalRouteId}, {nomeItinerario}, {name})
@@ -19,13 +19,30 @@ object Route {
           'externalRouteId -> route.externalRouteId,
           'nomeItinerario  -> route.nomeItinerario,
           'name            -> route.name
-        ).executeUpdate()
+        ).executeInsert()
+    }
+    route.stops.foreach(Stop.insert(routeId.get, _))
+  }
+
+  def deleteAll() = {
+    Stop.deleteAll()
+    DB.withConnection { implicit c =>
+      SQL("DELETE from Routes").executeUpdate()
     }
   }
 
   def find(externalRouteId: String = "", nomeItinerario: String = ""): Option[Route] = {
     DB.withConnection { implicit c =>
       SQL("SELECT * FROM Routes").on().as(Route.simple.singleOpt)
+    }
+  }
+  
+  def findAll(): Set[Route] = {
+    DB.withConnection { implicit c => 
+      val routesSelect = SQL("SELECT * FROM Routes")
+        routesSelect().map( row =>
+          new Route(row[String]("name"), row[String]("externalRouteId").toString, row[String]("nomeItinerario"))
+        ).toSet
     }
   }
 
