@@ -36,6 +36,15 @@ object Route {
       SQL("SELECT * FROM Routes").on().as(Route.simple.singleOpt)
     }
   }
+  
+  def findAll(): Set[Route] = {
+    DB.withConnection { implicit c => 
+      val routesSelect = SQL("SELECT * FROM Routes")
+        routesSelect().map( row =>
+          new Route(row[String]("name"), row[String]("externalRouteId").toString, row[String]("nomeItinerario"))
+        ).toSet
+    }
+  }
 
   def simple = {
     get[String]("externalRouteId") ~
