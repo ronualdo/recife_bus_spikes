@@ -6,7 +6,7 @@ import anorm._
 import anorm.SqlParser._
 import play.Logger
 
-class Stop(val codigo: String, val bairro: String, val logradouro: String, val referencia: String, val latitude: String, val longitude: String)
+case class Stop(val codigo: String, val bairro: String, val logradouro: String, val referencia: String, val latitude: String, val longitude: String)
 
 object Stop {
   

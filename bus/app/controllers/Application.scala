@@ -11,15 +11,17 @@ import models._
 import play.Logger
 
 object Application extends Controller {
-
   def index = Action {
+    Ok(views.html.index(Route.find(externalRouteId = "744")))
+  }
+
+  def reload = Action {
     //cleaning database
     //check if theres new information
     Route.deleteAll()
     
     val routes = PageScraper.parse
     routes.foreach(Route.insert(_))
- 
-    Ok(views.html.index(Route.findAll))
+    Ok(views.html.index(Route.find(externalRouteId = "744")))
   }
 }
