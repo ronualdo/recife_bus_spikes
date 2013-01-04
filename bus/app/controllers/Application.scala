@@ -1,15 +1,10 @@
 package controllers
 
 import play.api._
-import play.api.db._
 import play.api.mvc._
-import play.api.Play.current
-import anorm._
-import anorm.SqlParser._
 import recifeBuses._
 import models._
-import play.Logger
-import play.api.libs.json.Json._
+import com.codahale.jerkson.Json
 
 object Application extends Controller {
   def index = Action {
@@ -17,23 +12,9 @@ object Application extends Controller {
   }
   
   def stopsFor(routeId: String) = Action {
-    val routes = Route.find(externalRouteId= routeId).map { route =>
-      Map("name" -> toJson(route.name),
-        "externalRouteId" -> toJson(route.externalRouteId),
-        "nomeItinerario" -> toJson(route.nomeItinerario),
-        "stops" -> toJson(route.stops.map {s =>
-            Map("codigo" -> toJson(s.codigo),
-              "bairro" -> toJson(s.bairro),
-              "logradouro" -> toJson(s.logradouro),
-              "referencia" -> toJson(s.referencia),
-              "latitude" -> toJson(s.latitude),
-              "longitude" -> toJson(s.longitude)
-              )
-          })
-       )
-    }
-    
-    Ok(toJson(routes))
+    val foundRoutes = Route.find(externalRouteId = routeId)
+    val result = Json.generate(foundRoutes)
+    Ok(result)
   }
 
   def reload = Action {
